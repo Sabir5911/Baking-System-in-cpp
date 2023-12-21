@@ -1,160 +1,227 @@
-// Bismillah rahman rahim  AllahuAkbar
+using namespace std;
 #include <iostream>
 #include <fstream>
 #include <string>
-using namespace std;
 #include <sstream>
+#include <typeinfo>
 
 struct UserData
 {
-    string Firstname;
-    string Lastname;
-    string Pincode;
+    std::string Firstname;
+    std::string Lastname;
+    std::string Pincode;
     int balance = 0;
-    static int objectCounter;
-    UserData()
-    {
-        objectCounter++;
-    }
 };
-
-int UserData::objectCounter = 0;
-
-int CheckBal(string Firstname, string Lastname, string Pincode)
+void Data_Trs(string Firstname, string Lastname, string Pincode,
+              string TFirst, string Tlast)
 {
+    UserData User, User2;
+    bool flag = false;
+    int data=0;
+    std::fstream files;
+    files.open("users.txt", std::ios::in);
 
-    UserData User;
-    int UserData = 0;
-    fstream file;
-    file.open("users.txt", ios::in);
-    string Data, ip;
-    while (getline(file, Data))
+    std::string Data, update;
+    while (std::getline(files, Data))
     {
-        istringstream iss(Data);
+        std::istringstream iss(Data);
+        std::istringstream is(Data);
 
-        iss >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
-        if (Firstname == User.Firstname && Lastname == User.Lastname && Pincode == User.Pincode)
+        is >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
+        iss >> User2.Firstname >> User2.Lastname >> User2.Pincode >> User2.balance;
+
+        // if (Firstname == User.Firstname && Lastname == User.Lastname && Pincode == User.Pincode)
+        // {
+        //    data= User.balance;
+        //     flag = true;
+        // }
+
+        if (flag == true)
         {
-            cout << User.balance << endl;
+            if(TFirst==User2.Firstname && Tlast==User2.Lastname)
+            {
+                cout<<"Enter the amount you want to transfer: ";
+                int amount;
+                cin>>amount;
+                if(amount>int(data))
+                {
+                    cout<<"Insufficient funds!"<<endl;
+                }
+                else
+                {
+                    User.balance-=amount;
+                    User2.balance+=amount;
+                }
+            }
+            else
+            {
+                cout<<"User not found"<<endl;
+            }
+            // std::cout << "Enter the amount you want to transfer: ";
+            // int amount;
+            // std::cin >> amount;
+
+            cout <<(data) << endl;
+            // if (amount > int(User.balance))
+            // {
+            //     std::cout << "Insufficient funds!" << std::endl;
+            // }
+            // else
+            // {
+            //     User.balance -= amount;
+            //     User2.balance += amount;
+            // }
         }
+
+        update += User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + std::to_string(User.balance) + " ";
+        update += User2.Firstname + " " + User2.Lastname + " " + User2.Pincode + " " + std::to_string(User2.balance) + "\n";
     }
+
+    // files.close();
+
+    // files.open("users.txt", std::ios::out);
+    // files << update;
+    // files.close();
 }
 
-int Withdraw(string Firstname, string Lastname, string Pincode, int bal)
+int CheckBal(std::string Firstname, std::string Lastname, std::string Pincode)
 {
-
     UserData User;
-    fstream files;
-    files.open("users.txt", ios::in);
-    string st, update;
-    while (getline(files, st))
-    {
-        istringstream iss(st);
+    std::fstream file;
+    file.open("users.txt", std::ios::in);
+    std::string Data;
 
+    while (std::getline(file, Data))
+    {
+        std::istringstream iss(Data);
+        iss >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
+
+        if (Firstname == User.Firstname && Lastname == User.Lastname && Pincode == User.Pincode)
+        {
+            std::cout << User.balance << std::endl;
+            return User.balance;
+        }
+    }
+    return 0;
+}
+
+int Withdraw(std::string Firstname, std::string Lastname, std::string Pincode, int bal)
+{
+    UserData User;
+    std::fstream files;
+    files.open("users.txt", std::ios::in);
+    std::string st, update;
+
+    while (std::getline(files, st))
+    {
+        std::istringstream iss(st);
         iss >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
 
         if (Firstname == User.Firstname && Lastname == User.Lastname && Pincode == User.Pincode)
         {
             if (bal > User.balance)
             {
-                cout << "Are You Crazy?: " << endl;
+                std::cout << "Are You Crazy?: " << std::endl;
             }
             else
             {
                 User.balance -= bal;
             }
         }
-        update += User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + to_string(User.balance) + "\n";
+        update += User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + std::to_string(User.balance) + "\n";
     }
 
     files.close();
-    files.open("users.txt", ios::out);
+    files.open("users.txt", std::ios::out);
+    files << update;
+    files.close();
 
-    ofstream updateFils("users.txt");
-    updateFils << update;
+    return 0;
 }
 
-int deposit(string Firstname, string Lastname, string Pincode, int bal)
+int deposit(std::string Firstname, std::string Lastname, std::string Pincode, int bal)
 {
-
     UserData User;
-    fstream files;
-    files.open("users.txt", ios::in);
-    string st, update;
-    while (getline(files, st))
-    {
-        istringstream iss(st);
+    std::fstream files;
+    files.open("users.txt", std::ios::in);
+    std::string st, update;
 
+    while (std::getline(files, st))
+    {
+        std::istringstream iss(st);
         iss >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
 
         if (Firstname == User.Firstname && Lastname == User.Lastname && Pincode == User.Pincode)
         {
             User.balance = User.balance + bal;
         }
-        update += User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + to_string(User.balance) + "\n";
+        update += User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + std::to_string(User.balance) + "\n";
     }
 
     files.close();
-    files.open("users.txt", ios::out);
+    files.open("users.txt", std::ios::out);
+    files << update;
+    files.close();
 
-    ofstream updateFils("users.txt");
-    updateFils << update;
+    return 0;
 }
 
-int signin(string Firstname, string Lastname, string Pincode)
+bool signin(std::string Firstname, std::string Lastname, std::string Pincode)
 {
-    fstream files("users.txt", ios::in);
-    string first, last, code, st;
-    while (getline(files, st))
+    std::fstream files("users.txt", std::ios::in);
+    std::string first, last, code, st;
+    while (std::getline(files, st))
     {
-        istringstream iss(st);
-
+        std::istringstream iss(st);
         iss >> first >> last >> code;
 
         if (Firstname == first && Lastname == last && Pincode == code)
         {
+            files.close();
             return true;
         }
     }
+    files.close();
     return false;
 }
 
 int signup()
 {
     UserData User;
-    cout << "Enter your First Name" << endl;
-    cin >> User.Firstname;
-    cout << "Enter your Last Name" << endl;
-    cin >> User.Lastname;
+    std::cout << "Enter your First Name" << std::endl;
+    std::cin >> User.Firstname;
+    std::cout << "Enter your Last Name" << std::endl;
+    std::cin >> User.Lastname;
 
-    cout << "Enter Pin Code" << endl;
-    cin >> User.Pincode;
+    std::cout << "Enter Pin Code" << std::endl;
+    std::cin >> User.Pincode;
     User.balance = 0;
 
     if (signin(User.Firstname, User.Lastname, User.Pincode))
     {
-        cout << "Dear"
-             << " " << User.Firstname << " " << User.Lastname << " "
-             << "You account is already created please sign" << endl;
+        std::cout << "Dear " << User.Firstname << " " << User.Lastname << " Your account is already created. Please sign in." << std::endl;
     }
     else
     {
-        fstream files;
-        files.open("users.txt", ios::app);
-
-        files << User.Firstname << " " << User.Lastname << " " << User.Pincode << " " << User.balance << endl;
+        std::fstream files;
+        files.open("users.txt", std::ios::app);
+        files << User.Firstname << " " << User.Lastname << " " << User.Pincode << " " << User.balance << std::endl;
+        files.close();
     }
+
+    return 0;
 }
 
 int main()
 {
-    UserData Data;
+    UserData Data, Data2;
+
     while (true)
     {
-        cout << "1. Sign Up\n2. Sign In\n3.\n4 Exit\n";
+        std::cout << "1. Sign Up\n2. Sign In\n3. Check Bal\n4. Exit\n";
         int choice;
-        cout << "Enter your choice: ";
-        cin >> choice;
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
 
         if (choice == 1)
         {
@@ -162,56 +229,64 @@ int main()
         }
         else if (choice == 2)
         {
-            cout << "Enter your First Name" << endl;
-            cin >> Data.Firstname;
-            cout << "Enter your Last Name" << endl;
-            cin >> Data.Lastname;
+            std::cout << "Enter your First Name" << std::endl;
+            std::cin >> Data.Firstname;
+            std::cout << "Enter your Last Name" << std::endl;
+            std::cin >> Data.Lastname;
 
-            cout << "Enter Pin Code" << endl;
-            cin >> Data.Pincode;
+            std::cout << "Enter Pin Code" << std::endl;
+            std::cin >> Data.Pincode;
 
             if (signin(Data.Firstname, Data.Lastname, Data.Pincode))
             {
-                cout << "You are  login" << endl;
+                std::cout << "You are logged in" << std::endl;
                 int opt;
-                cout << "1. Deposit Cash\n2. Withdraw Money\n3 .Check Balance \nExit\n";
-                cin >> opt;
+                std::cout << "1. Deposit Cash\n2. Withdraw Money\n3. Check Balance\n4. Exit\n";
+                std::cin >> opt;
 
                 if (opt == 1)
                 {
                     int amount;
-                    cout << "Enter the amount you want to deposit: ";
-                    cin >> amount;
-                    deposit(Data.Lastname, Data.Lastname, Data.Pincode, amount);
+                    std::cout << "Enter the amount you want to deposit: ";
+                    std::cin >> amount;
+                    deposit(Data.Firstname, Data.Lastname, Data.Pincode, amount);
                 }
                 else if (opt == 2)
                 {
                     int amount;
-
-                    cout << "Enter the amount you want to Withdraw: ";
-                    cin >> amount;
-
+                    std::cout << "Enter the amount you want to withdraw: ";
+                    std::cin >> amount;
                     Withdraw(Data.Firstname, Data.Lastname, Data.Pincode, amount);
                 }
                 else if (opt == 3)
                 {
-                    CheckBal(Data.Firstname, Data.Lastname, Data.Pincode);
+                    std::cout << "Enter the name of the person you want to transfer to: ";
+                    std::cin >> Data2.Firstname;
+                    std::cout << "Enter the last name of the person you want to transfer to: ";
+                    std::cin >> Data2.Lastname;
+                    // CheckBal(Data.Firstname, Data.Lastname, Data.Pincode);
+                    Data_Trs(Data.Firstname, Data.Lastname, Data.Pincode, Data2.Firstname, Data2.Lastname);
+                }
+                else if (opt == 4)
+                {
+                    break; // Exit the loop
                 }
             }
             else
             {
-                cout << "Invalid username or password. Please sign up first." << endl;
+                std::cout << "Invalid username or password. Please sign up first." << std::endl;
             }
         }
         else if (choice == 3)
         {
-            cout << "thanks for using atm ";
-
-            fstream file;
-            UserData Data;
-            file.open("Total.txt", ios::app);
-            file << "Total Ac: " << Data.objectCounter;
-            break;
+            std::cout << "Thanks for using ATM ";
+            break; // Exit the loop
+        }
+        else if (choice == 4)
+        {
+            break; // Exit the loop
         }
     }
+
+    return 0;
 }
