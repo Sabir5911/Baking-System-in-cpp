@@ -4,6 +4,7 @@
 #include <string>
 using namespace std;
 #include <sstream>
+#include<time.h>
 
 struct UserData
 {
@@ -87,6 +88,9 @@ int signup()
     cin >> User.Pincode;
 
     User.balance = 0;
+    srand(time(nullptr));
+
+int a =rand();
 
     if (signin(User.Firstname, User.Lastname, User.Pincode))
     {

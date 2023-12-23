@@ -1,4 +1,2 @@
-sabir ali 2121 1900
-ali p 0909 0
-sabir2 loa 32 0
-sabir2 loa 32 0
+27453 sabir ali 123 388
+27482 p p 1221 100

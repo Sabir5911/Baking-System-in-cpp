@@ -3,17 +3,16 @@ using namespace std;
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <typeinfo>
-
+#include <time.h>
 struct UserData
 {
     string Firstname;
     string Lastname;
     string Pincode;
+    int id_number;
     int balance = 0;
 };
-void Data_Trs(string Firstname, string Lastname, string Pincode,
-              string TFirst, string Tlast, int amount = 8)
+void Data_Trs( int id,  int id2 ,string pass, int amount = 8)
 {
     UserData User, User2;
 
@@ -25,15 +24,15 @@ void Data_Trs(string Firstname, string Lastname, string Pincode,
     while (getline(files, Data))
     {
         istringstream iss(Data);
-        iss >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
+        iss >> User.id_number >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
 
-        if (Firstname == User.Firstname && Lastname == User.Lastname && Pincode == User.Pincode)
+        if (id == User.id_number && pass == User.Pincode)
         {
             found = true;
             User.balance -= amount;
         }
 
-        update += User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + to_string(User.balance) + "\n";
+        update += to_string(User.id_number) + " " + User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + to_string(User.balance) + "\n";
     }
     files.close();
 
@@ -51,9 +50,9 @@ void Data_Trs(string Firstname, string Lastname, string Pincode,
 
         istringstream is(Data);
 
-        is >> User2.Firstname >> User2.Lastname >> User2.Pincode >> User2.balance;
+        is >> User2.id_number >> User2.Firstname >> User2.Lastname >> User2.Pincode >> User2.balance;
 
-        if (User2.Firstname == TFirst && User2.Lastname == Tlast && found)
+        if (User2.id_number == id2  && found)
         {
             cout << "Updating balance..." << endl;
             User2.balance += amount;
@@ -63,7 +62,7 @@ void Data_Trs(string Firstname, string Lastname, string Pincode,
             cout << "Skipping update..." << endl;
         }
 
-        update2 += User2.Firstname + " " + User2.Lastname + " " + User2.Pincode + " " + to_string(User2.balance) + "\n";
+        update2 += to_string(User2.id_number) + " " + User2.Firstname + " " + User2.Lastname + " " + User2.Pincode + " " + to_string(User2.balance) + "\n";
     }
 
     files.close();
@@ -72,7 +71,7 @@ void Data_Trs(string Firstname, string Lastname, string Pincode,
     files << update2;
     files.close();
 }
-int CheckBal(string Firstname, string Lastname, string Pincode)
+void CheckBal(int id_number, string Pincode)
 {
     UserData User;
     fstream file;
@@ -82,18 +81,17 @@ int CheckBal(string Firstname, string Lastname, string Pincode)
     while (getline(file, Data))
     {
         istringstream iss(Data);
-        iss >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
+        iss >> User.id_number >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
 
-        if (Firstname == User.Firstname && Lastname == User.Lastname && Pincode == User.Pincode)
+        if (id_number == User.id_number && Pincode == User.Pincode)
         {
             cout << User.balance << endl;
-            return User.balance;
+           
         }
     }
-    return 0;
 }
 
-int Withdraw(string Firstname, string Lastname, string Pincode, int bal)
+int Withdraw(int id_number, string Pincode, int bal)
 {
     UserData User;
     fstream files;
@@ -103,9 +101,9 @@ int Withdraw(string Firstname, string Lastname, string Pincode, int bal)
     while (getline(files, st))
     {
         istringstream iss(st);
-        iss >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
+        iss >> User.id_number >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
 
-        if (Firstname == User.Firstname && Lastname == User.Lastname && Pincode == User.Pincode)
+        if (id_number == User.id_number && Pincode == User.Pincode)
         {
             if (bal > User.balance)
             {
@@ -116,7 +114,7 @@ int Withdraw(string Firstname, string Lastname, string Pincode, int bal)
                 User.balance -= bal;
             }
         }
-        update += User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + to_string(User.balance) + "\n";
+        update += to_string(User.id_number) + " " + User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + to_string(User.balance) + "\n";
     }
 
     files.close();
@@ -127,7 +125,7 @@ int Withdraw(string Firstname, string Lastname, string Pincode, int bal)
     return 0;
 }
 
-int deposit(string Firstname, string Lastname, string Pincode, int bal)
+int deposit(int id_number, string Pincode, int bal)
 {
     UserData User;
     fstream files;
@@ -137,13 +135,13 @@ int deposit(string Firstname, string Lastname, string Pincode, int bal)
     while (getline(files, st))
     {
         istringstream iss(st);
-        iss >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
+        iss >> User.id_number >> User.Firstname >> User.Lastname >> User.Pincode >> User.balance;
 
-        if (Firstname == User.Firstname && Lastname == User.Lastname && Pincode == User.Pincode)
+        if (id_number == User.id_number && Pincode == User.Pincode)
         {
             User.balance = User.balance + bal;
         }
-        update += User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + to_string(User.balance) + "\n";
+        update += to_string(User.id_number) + " " + User.Firstname + " " + User.Lastname + " " + User.Pincode + " " + to_string(User.balance) + "\n";
     }
 
     files.close();
@@ -154,22 +152,21 @@ int deposit(string Firstname, string Lastname, string Pincode, int bal)
     return 0;
 }
 
-bool signin(string Firstname, string Lastname, string Pincode)
+bool signin(int U_d, string password)
 {
     fstream files("users.txt", ios::in);
-    string first, last, code, st;
+    string U_id, first, last, code, st;
     while (getline(files, st))
     {
         istringstream iss(st);
-        iss >> first >> last >> code;
+        iss >> U_id >> first >> last >> code;
 
-        if (Firstname == first && Lastname == last && Pincode == code)
+        if (U_id == to_string(U_d) && code == password)
         {
             files.close();
             return true;
         }
     }
-    files.close();
     return false;
 }
 
@@ -185,7 +182,11 @@ int signup()
     cin >> User.Pincode;
     User.balance = 0;
 
-    if (signin(User.Firstname, User.Lastname, User.Pincode))
+    User.balance = 0;
+    srand(time(nullptr));
+    int a = rand();
+    User.id_number = a;
+    if (signin(User.id_number, User.Pincode))
     {
         cout << "Dear " << User.Firstname << " " << User.Lastname << " Your account is already created. Please sign in." << endl;
     }
@@ -193,7 +194,7 @@ int signup()
     {
         fstream files;
         files.open("users.txt", ios::app);
-        files << User.Firstname << " " << User.Lastname << " " << User.Pincode << " " << User.balance << endl;
+        files << User.id_number << " " << User.Firstname << " " << User.Lastname << " " << User.Pincode << " " << User.balance << endl;
         files.close();
     }
 
@@ -202,7 +203,7 @@ int signup()
 
 int main()
 {
-    UserData Data, Data2;
+    UserData Data;
 
     while (true)
     {
@@ -217,15 +218,11 @@ int main()
         }
         else if (choice == 2)
         {
-            cout << "Enter your First Name" << endl;
-            cin >> Data.Firstname;
-            cout << "Enter your Last Name" << endl;
-            cin >> Data.Lastname;
-
-            cout << "Enter Pin Code" << endl;
+            cout << "id: ";
+            cin >> Data.id_number;
+            cout << "pss: ";
             cin >> Data.Pincode;
-
-            if (signin(Data.Firstname, Data.Lastname, Data.Pincode))
+            if (signin(Data.id_number, Data.Pincode))
             {
                 cout << "You are logged in" << endl;
                 int opt;
@@ -237,31 +234,29 @@ int main()
                     int amount;
                     cout << "Enter the amount you want to deposit: ";
                     cin >> amount;
-                    deposit(Data.Firstname, Data.Lastname, Data.Pincode, amount);
+                    deposit(Data.id_number, Data.Pincode, amount);
                 }
                 else if (opt == 2)
                 {
                     int amount;
                     cout << "Enter the amount you want to withdraw: ";
                     cin >> amount;
-                    Withdraw(Data.Firstname, Data.Lastname, Data.Pincode, amount);
+                    Withdraw(Data.id_number, Data.Pincode,  amount);
                 }
                 else if (opt == 3)
                 {
-                    string Firstname, Lastname;
-                    cout << "Enter the name of the person you want to transfer to: ";
-                    cin >> Firstname;
-                    cout << "Enter the last name of the person you want to transfer to: ";
-                    cin >> Lastname;
+                    int acc;
+                    cout << "Enter the name of the acc you want to transfer to: ";
+                 cin>>acc;
                     int amount;
                     cout << "Enter the amount you want to transfer: ";
                     cin >> amount;
                     // CheckBal(Data.Firstname, Data.Lastname, Data.Pincode);
-                    Data_Trs(Data.Firstname, Data.Lastname, Data.Pincode, Firstname, Lastname, amount);
+                    Data_Trs(Data.id_number, acc, Data.Pincode, amount);
                 }
                 else if (opt == 4)
                 {
-                    break; 
+                    break;
                 }
             }
             else
@@ -272,13 +267,12 @@ int main()
         else if (choice == 3)
         {
             cout << "Thanks for using ATM ";
-            break; 
+            break;
         }
         else if (choice == 4)
         {
-            break; 
+            break;
         }
     }
 
-    return 0;
 }
