@@ -3,8 +3,6 @@
 #include <string>
 #include <sstream>
 #include <ctime>
-#include <limits>   // for numeric_limits
-
 #include <windows.h>
 using namespace std;
 #define ANSI_BLUE "\033[34m"
@@ -16,6 +14,10 @@ using namespace std;
 #define ANSI_YELLOW "\033[1;33m"
 using namespace std;
 
+
+
+
+
 struct UserData
 {
     string Firstname;
@@ -24,45 +26,7 @@ struct UserData
     int id_number;
     int balance = 0;
 };
-void PincodeUpdate(int U_d, string Pincode)
-{
-    UserData User;
-    fstream files;
-    files.open("users.csv", ios::in);
 
-    string st, update, NewPin;
-    const char CSV_DELIMITER = ',';
-    while (getline(files, st))
-    {
-        istringstream iss(st);
-        getline(iss, st, ',');
-        User.id_number = stoi(st);
-
-        getline(iss, User.Firstname, CSV_DELIMITER);
-        getline(iss, User.Lastname, CSV_DELIMITER);
-        getline(iss, User.Pincode, CSV_DELIMITER);
-        getline(iss, st, CSV_DELIMITER);
-
-        User.balance = stoi(st);
-
-        if (U_d == User.id_number && Pincode == User.Pincode)
-        {
-            cout << "enter your new Pin code:";
-            cin >> NewPin;
-            cout << endl;
-            User.Pincode = NewPin;
-            cout << "Pin Code has successfully change to :" << User.Pincode << endl;
-        }
-        update += to_string(User.id_number) + CSV_DELIMITER + User.Firstname + CSV_DELIMITER + User.Lastname + CSV_DELIMITER + User.Pincode + CSV_DELIMITER + to_string(User.balance) + "\n";
-    }
-
-    files.close();
-
-    files.open("users.csv", ios::out);
-
-    files << update;
-    files.close();
-}
 
 bool signin(int U_d, string Pincode)
 {
@@ -111,7 +75,7 @@ int deposit(int ide, string Pincode, int bal)
         if (ide == User.id_number && Pincode == User.Pincode)
         {
             cout << ANSI_purp;
-            cout << "Adding the balance in to your account" << endl;
+            cout << "Adding the balance in to your account"<<endl;
             User.balance += bal;
             cout << ANSI_pik;
             cout << "Your Updated Balance is:" << User.balance;
@@ -186,104 +150,92 @@ void Data_Trs(int id, int id2, string pass, int amount)
 {
     const char CSV_DELIMITER = ',';
     UserData User, User2;
-    int check;
+
     fstream files;
     files.open("users.csv", ios::in);
-    fstream otp;
-    otp.open("otp.txt", ios::out | ios::trunc);
-    srand(time(nullptr));
-    int a = rand();
-    otp << a;
-    otp.close();
-    cout << "enter a otp genrated in file" << endl;
-    cin >> check;
-    if (check == a)
+
+    bool found = true;
+    string st, update;
+    while (getline(files, st))
     {
-        bool found = true;
-        string st, update;
-        while (getline(files, st))
+        istringstream iss(st);
+        getline(iss, st, CSV_DELIMITER);
+        User.id_number = stoi(st);
+
+        getline(iss, User.Firstname, CSV_DELIMITER);
+        getline(iss, User.Lastname, CSV_DELIMITER);
+        getline(iss, User.Pincode, CSV_DELIMITER);
+        getline(iss, st, CSV_DELIMITER);
+
+        User.balance = stoi(st);
+
+        if (id == User.id_number && pass == User.Pincode)
         {
-            istringstream iss(st);
-            getline(iss, st, CSV_DELIMITER);
-            User.id_number = stoi(st);
 
-            getline(iss, User.Firstname, CSV_DELIMITER);
-            getline(iss, User.Lastname, CSV_DELIMITER);
-            getline(iss, User.Pincode, CSV_DELIMITER);
-            getline(iss, st, CSV_DELIMITER);
-
-            User.balance = stoi(st);
-
-            if (id == User.id_number && pass == User.Pincode)
+            if (User.balance < amount || id2 == id)
+            {
+                cout << ANSI_RED;
+                cout << "You did Some thing wrong:" << endl;
+                found = false;
+                break;
+            }
+            else
             {
 
-                if (User.balance < amount || id2 == id)
-                {
-                    cout << ANSI_RED;
-                    cout << "You did Some thing wrong:" << endl;
-                    found = false;
-                    break;
-                }
-                else
-                {
+                User.balance -= amount;
+                cout << ANSI_purp;
+                cout << "Transfering amount to " << id2 << " account this will take few seconds" << endl;
+                Sleep(3000);
+                cout << ANSI_RED;
 
-                    User.balance -= amount;
-                    cout << ANSI_purp;
-                    cout << "Transfering amount to " << id2 << " account this will take few seconds" << endl;
-                    Sleep(3000);
-                    cout << ANSI_RED;
-
-                    cout << amount << "Rs"
-                         << " successfully dedected from your account \n"
-                         << endl;
-                    cout << ANSI_GREEN;
-                    cout << "Your current balance is: " << User.balance << "Rs" << endl;
-                }
+                cout << amount << "Rs"
+                     << " successfully dedected from your account \n"
+                     << endl;
+                cout << ANSI_GREEN;
+                cout << "Your current balance is: " << User.balance << "Rs" << endl;
             }
-            update += to_string(User.id_number) + CSV_DELIMITER + User.Firstname + CSV_DELIMITER + User.Lastname + CSV_DELIMITER + User.Pincode + CSV_DELIMITER + to_string(User.balance) + "\n";
         }
-
-        if (found == true)
-        {
-            files.close();
-            files.open("users.csv", ios::out);
-            files << update;
-            files.close();
-            files.open("users.csv", ios::in);
-
-            string update2, data2;
-
-            while (getline(files, data2))
-            {
-                istringstream iss(data2);
-                getline(iss, data2, CSV_DELIMITER);
-                User2.id_number = stoi(data2);
-
-                getline(iss, User2.Firstname, CSV_DELIMITER);
-                getline(iss, User2.Lastname, CSV_DELIMITER);
-                getline(iss, User2.Pincode, CSV_DELIMITER);
-                getline(iss, data2, CSV_DELIMITER);
-
-                User2.balance = stoi(data2);
-
-                if (id2 == User2.id_number)
-                {
-                    User2.balance += amount;
-                    cout << "Transaction done!" << endl;
-                }
-                update2 += to_string(User2.id_number) + CSV_DELIMITER + User2.Firstname + CSV_DELIMITER + User2.Lastname + CSV_DELIMITER + User2.Pincode + CSV_DELIMITER + to_string(User2.balance) + "\n";
-            }
-
-            files.close();
-
-            files.open("users.csv", ios::out);
-            files << update2;
-            files.close();
-        }
+        update += to_string(User.id_number) + CSV_DELIMITER + User.Firstname + CSV_DELIMITER + User.Lastname + CSV_DELIMITER + User.Pincode + CSV_DELIMITER + to_string(User.balance) + "\n";
     }
-    else
+
+
+
+    if (found == true)
     {
-        cout << " You have entered  wrong otp" << endl;
+    files.close();
+    files.open("users.csv", ios::out);
+    files << update;
+    files.close();
+        files.open("users.csv", ios::in);
+
+        string update2, data2;
+
+        while (getline(files, data2))
+        {
+            istringstream iss(data2);
+            getline(iss, data2, CSV_DELIMITER);
+            User2.id_number = stoi(data2);
+
+            getline(iss, User2.Firstname, CSV_DELIMITER);
+            getline(iss, User2.Lastname, CSV_DELIMITER);
+            getline(iss, User2.Pincode, CSV_DELIMITER);
+            getline(iss, data2, CSV_DELIMITER);
+
+            User2.balance = stoi(data2);
+
+            if (id2 == User2.id_number)
+            {
+                User2.balance += amount;
+                cout << "Transaction done!" << endl;
+            }
+            update2 += to_string(User2.id_number) + CSV_DELIMITER + User2.Firstname + CSV_DELIMITER + User2.Lastname + CSV_DELIMITER + User2.Pincode + CSV_DELIMITER + to_string(User2.balance) + "\n";
+        }
+
+        files.close();
+
+        files.open("users.csv", ios::out);
+        files << update2;
+        files.close();
     }
 }
 
@@ -355,62 +307,39 @@ int signup()
 
     return 0;
 }
+int main()
+{
+    cout << ANSI_GREEN;
+    cout << "      __________________________\n";
+    cout << "     | BANKING SYSTEM IN C++     |\n";
+    cout << "     |      FUNCTIONALITY        |\n";
+    cout << "     | login/SignUp/CheckBalance |\n";
+    cout << "     | CHECK balance/TRANSFER    | \n";
+    cout << "     |___________________________|\n"
+         << ANSI_GREEN;
+    cout << "          |  |  |  |  |  | \n";
+    cout << "        __|__|__|__|__|__|__\n";
+    cout << "       |  |  |  |  |  |  |  |\n";
+    cout << "      _|__|__|__|__|__|__|__|_\n"
+         << ANSI_GREEN;
+    cout<<  "      _________________________\n" ;
+    cout << "     | PROGRAMMING fUNDAMENTALS|\n";
+    cout << "     |    SEMESTER Project     |\n";
+    cout << "     |MADE BY Sabir and Askari |\n";
+    cout << "     |_________________________|\n";
+    Sleep(4000);
+    cout << ANSI_RESET;
+    cout << endl;
+    UserData Data;
 
-int display() {
-    while (true) {
-          cout << "\033[32m"; 
-        cout << "      __________________________\n";
-        cout << "     | BANKING SYSTEM IN C++     |\n";
-        cout << "     |      FUNCTIONALITY        |\n";
-        cout << "     | login/SignUp/CheckBalance |\n";
-        cout << "     | CHECK balance/TRANSFER    | \n";
-        cout << "     |___________________________|\n"
-             << "\033[0m"; 
-
-        cout << "          |  |  |  |  |  | \n";
-        cout << "        __|__|__|__|__|__|__\n";
-        cout << "       |  |  |  |  |  |  |  |\n";
-        cout << "      _|__|__|__|__|__|__|__|_\n"
-             << "\033[32m"; 
-
-        cout << "      _________________________\n";
-        cout << "     | PROGRAMMING fUNDAMENTALS|\n";
-        cout << "     |    SEMESTER Project     |\n";
-        cout << "     |MADE BY Sabir and Askari |\n";
-        cout << "     |_________________________|\n";
-        cout << "\033[0m"; 
-
-        Sleep(4000);
-        cout << endl;
+    while (true)
+    {
+        cout << ANSI_pik;
+        cout << "1. Sign Up\n2. Sign In\n3. Exit\n";
         int choice;
-          cout << "1. Sign Up\n2. Sign In\n3. Exit\n";
-        cout << "\033[0m"; 
         cout << "Enter your choice: ";
         cin >> choice;
 
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore();
-            cout << "Error: Please enter a valid integer.\n";
-            continue;
-        }
-
-        if (choice < 1 || choice > 3) {
-            cout << "Error: Invalid choice. Please enter a number between 1 and 3.\n";
-            continue;
-        }
-
-        return choice;
-    }
-}
-
-
-void Full(){
-       UserData Data;
-    while (true)
-    {
-
-      int choice=display();
         if (choice == 1)
         {
             cout << ANSI_BLUE;
@@ -439,7 +368,7 @@ void Full(){
                 {
                     int opt;
                     cout << ANSI_YELLOW;
-                    cout << "\nTo Preform operations Press  \n1. Deposit Cash\n2. Withdraw Money\n3. Check Balance\n4. Transfer amount\n5. Change Pin \n6. logout from account" << endl;
+                    cout << "\nTo Preform operations Press  \n1. Deposit Cash\n2. Withdraw Money\n3. Check Balance\n4. Transfer amount\n5. Logout from account" << endl;
                     cout << "Your Choices: ";
                     cin >> opt;
 
@@ -481,7 +410,7 @@ void Full(){
                         Sleep(500);
                         cout << ANSI_RESET;
                     }
-                    else if (opt == 6)
+                    else if (opt == 5)
                     {
                         cout << ANSI_YELLOW;
                         cout << "Clearing terminal to avoid data breach";
@@ -492,12 +421,6 @@ void Full(){
                         cout << ANSI_RESET;
 
                         flag = false;
-                    }
-                    else if (opt == 5)
-                    {
-                        cout << ANSI_GREEN;
-                        PincodeUpdate(Data.id_number, Data.Pincode);
-                        cout << ANSI_RESET;
                     }
                 }
             }
@@ -517,9 +440,4 @@ void Full(){
             exit(0);
         }
     }
-}
-int main()
-{
-
- Full();
 }
